@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruleta de Seguridad Industrial</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0%, transparent 50%);
+            pointer-events: none;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: float 6s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            25% { transform: translateY(-20px) translateX(10px); }
+            75% { transform: translateY(-10px) translateX(-10px); }
+        }
+
+        .container {
+            text-align: center;
+            max-width: 900px;
+            width: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        h1 {
+            color: white;
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+            animation: titleGlow 2s ease-in-out infinite;
+            letter-spacing: 2px;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 3px 3px 6px rgba(0,0,0,0.4), 0 0 20px rgba(255,255,255,0.3); }
+            50% { text-shadow: 3px 3px 6px rgba(0,0,0,0.4), 0 0 40px rgba(255,255,255,0.6); }
+        }
+
+        .subtitle {
+            color: #fff;
+            font-size: 1.4rem;
+            margin-bottom: 40px;
+            opacity: 0.95;
+            font-weight: 600;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .wheel-container {
+            position: relative;
+            width: 550px;
+            height: 550px;
+            margin: 0 auto 50px;
+            max-width: 90vw;
+            max-height: 90vw;
+            filter: drop-shadow(0 15px 50px rgba(0,0,0,0.4));
+        }
+
+        .wheel-wrapper {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            transition: transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            border: 20px solid white;
+            overflow: hidden;
+            box-shadow: 
+                0 0 0 5px rgba(255,255,255,0.3),
+                0 20px 60px rgba(0,0,0,0.5),
+                inset 0 0 30px rgba(0,0,0,0.1);
+        }
+
+        .wheel-wrapper.spinning {
+            animation: wheelGlow 0.5s ease-in-out infinite;
+        }
+
+        @keyframes wheelGlow {
+            0%, 100% { box-shadow: 0 0 0 5px rgba(255,255,255,0.3), 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(255,215,0,0.6); }
+            50% { box-shadow: 0 0 0 5px rgba(255,255,255,0.5), 0 20px 60px rgba(0,0,0,0.5), 0 0 80px rgba(255,215,0,1); }
+        }
+
+        #wheelCanvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+
+        .wheel-center {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            box-shadow: 
+                0 8px 25px rgba(0,0,0,0.4),
+                inset 0 2px 10px rgba(255,255,255,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 8px solid white;
+            animation: centerRotate 3s linear infinite;
+        }
+
+        @keyframes centerRotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .wheel-center::after {
+            content: '🎯';
+            font-size: 3rem;
+            animation: centerBounce 1s ease-in-out infinite;
+        }
+
+        @keyframes centerBounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .arrow {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 30px solid transparent;
+            border-right: 30px solid transparent;
+            border-top: 60px solid #ff4757;
+            z-index: 20;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+            animation: arrowBounce 0.8s ease-in-out infinite;
+        }
+
+        @keyframes arrowBounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+        }
+
+        .arrow::before {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background: #ff4757;
+            border-radius: 50%;
+            top: -70px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .spin-button {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 50%, #ff6b6b 100%);
+            color: white;
+            border: none;
+            padding: 25px 70px;
+            font-size: 1.8rem;
+            font-weight: 800;
+            border-radius: 60px;
+            cursor: pointer;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            position: relative;
+            overflow: hidden;
+            border: 4px solid white;
+        }
+
+        .spin-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .spin-button:hover::before {
+            left: 100%;
+        }
+
+        .spin-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .spin-button:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .spin-button:disabled {
+            background: linear-gradient(135deg, #ccc 0%, #999 100%);
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.6;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 50px;
+            border-radius: 30px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 
+                0 25px 80px rgba(0,0,0,0.6),
+                0 0 0 10px rgba(255,255,255,0.1);
+            animation: modalSlideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+            border: 5px solid white;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-100px) scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 25px;
+            font-weight: 800;
+            text-align: center;
+            animation: headerPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes headerPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .modal-body {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 25px;
+            line-height: 1.8;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .timer {
+            font-size: 3rem;
+            color: #ff4757;
+            font-weight: 800;
+            margin: 25px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            animation: timerPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes timerPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); color: #ff6348; }
+        }
+
+        .answer-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .answer-btn {
+            padding: 20px 25px;
+            font-size: 1.1rem;
+            border: 3px solid transparent;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .answer-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.5s, height 0.5s;
+        }
+
+        .answer-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .answer-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border-color: #ffd700;
+        }
+
+        .close-btn {
+            background: linear-gradient(135deg, #26de81 0%, #20bf6b 100%);
+            color: white;
+            padding: 20px 50px;
+            font-size: 1.3rem;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .close-btn:hover {
+            background: linear-gradient(135deg, #20bf6b 0%, #26de81 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+        }
+
+        .confetti-piece {
+            position: fixed;
+            width: 12px;
+            height: 12px;
+            pointer-events: none;
+            z-index: 9999;
+            animation: confetti-fall 3s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .result-message {
+            font-size: 1.5rem;
+            margin-top: 25px;
+            padding: 25px;
+            border-radius: 20px;
+            font-weight: 700;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            animation: messageSlide 0.5s ease-out;
+        }
+
+        @keyframes messageSlide {
+            from { transform: translateX(-50px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .result-message.success {
+            background: linear-gradient(135deg, #26de81 0%, #20bf6b 100%);
+            color: white;
+        }
+
+        .result-message.fail {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+        }
+
+        .firework {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .sound-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+            border: 3px solid white;
+            z-index: 100;
+        }
+
+        .sound-indicator:hover {
+            background: rgba(255,255,255,0.4);
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .wheel-container {
+                width: 350px;
+                height: 350px;
+            }
+
+            .spin-button {
+                padding: 18px 45px;
+                font-size: 1.3rem;
+            }
+
+            .answer-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    
+    <div class="sound-indicator" id="soundToggle" title="Activar/Desactivar Sonido">🔊</div>
+
+    <div class="container">
+        <h1>🏭 RULETA DE SEGURIDAD INDUSTRIAL 🏭</h1>
+        <p class="subtitle">💡 Iluminación y Ventilación 💨</p>
+        
+        <div class="wheel-container">
+            <div class="arrow"></div>
+            <div class="wheel-wrapper" id="wheelWrapper">
+                <canvas id="wheelCanvas"></canvas>
+            </div>
+            <div class="wheel-center"></div>
+        </div>
+
+        <button class="spin-button" id="spinButton">
+            <span>¡GIRAR!</span>
+        </button>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalHeader"></div>
+            <div class="modal-body" id="modalBody"></div>
+            <div id="modalActions"></div>
+        </div>
+    </div>
+
+    <script>
+        const segments = [
+            {
+                type: 'pregunta',
+                text: '¿Qué es\ndeslumbramiento?',
+                icon: '💡',
+                question: '¿Qué es deslumbramiento?',
+                answers: ['Exceso de luz que molesta la visión', 'Falta de luz', 'Luz tenue', 'Iluminación perfecta'],
+                correct: 0,
+                color: '#FF6B6B'
+            },
+            {
+                type: 'castigo',
+                text: 'CASTIGO',
+                icon: '😅',
+                action: '¡Haz 10 saltos como si evitaras un deslumbramiento!',
+                color: '#4ECDC4'
+            },
+            {
+                type: 'pregunta',
+                text: '¿Cuántos lux\nen oficinas?',
+                icon: '📊',
+                question: '¿Cuántos lux se recomiendan para oficinas?',
+                answers: ['100 lux', '300 lux', '500 lux', '1000 lux'],
+                correct: 2,
+                color: '#FFE66D'
+            },
+            {
+                type: 'frase',
+                text: 'NI MODO',
+                icon: '🤷‍♂️',
+                message: '¡Ni modo... a la próxima será! 😅',
+                color: '#95E1D3'
+            },
+            {
+                type: 'pregunta',
+                text: 'Riesgos de mala\nventilación',
+                icon: '💨',
+                question: '¿Qué riesgos causa la mala ventilación?',
+                answers: ['Dolor de cabeza y fatiga', 'Mejor concentración', 'Más energía', 'Nada'],
+                correct: 0,
+                color: '#F38181'
+            },
+            {
+                type: 'castigo',
+                text: 'CASTIGO',
+                icon: '⚠️',
+                action: '¡Camina como si estuvieras en un pasillo con mala iluminación durante 10 segundos!',
+                color: '#AA96DA'
+            },
+            {
+                type: 'pregunta',
+                text: 'Iluminación\nnatural',
+                icon: '☀️',
+                question: '¿Qué es la iluminación natural?',
+                answers: ['Luz artificial', 'Luz del sol', 'Luz LED', 'Luz de velas'],
+                correct: 1,
+                color: '#FCBAD3'
+            },
+            {
+                type: 'frase',
+                text: 'FALLASTE',
+                icon: '😔',
+                message: '¡Intentaste, pero fallaste! Sigue practicando 🤷‍♂️',
+                color: '#A8D8EA'
+            },
+            {
+                type: 'premio',
+                text: '★ GRAN ★\nPREMIO',
+                icon: '🏆',
+                message: '¡FELICIDADES! 🎉 ¡Eres el CAMPEÓN de Seguridad Industrial! 🏆',
+                color: '#FFD700'
+            },
+            {
+                type: 'castigo',
+                text: 'CASTIGO',
+                icon: '💪',
+                action: '¡Simula ajustar una luminaria con las manos arriba por 10 segundos!',
+                color: '#6BCB77'
+            }
+        ];
+
+        const canvas = document.getElementById('wheelCanvas');
+        const ctx = canvas.getContext('2d');
+        const wheelWrapper = document.getElementById('wheelWrapper');
+        const spinButton = document.getElementById('spinButton');
+        const modal = document.getElementById('modal');
+        const modalHeader = document.getElementById('modalHeader');
+        const modalBody = document.getElementById('modalBody');
+        const modalActions = document.getElementById('modalActions');
+        const soundToggle = document.getElementById('soundToggle');
+
+        let isSpinning = false;
+        let currentRotation = 0;
+        let soundEnabled = true;
+
+        // Crear partículas de fondo
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.width = Math.random() * 4 + 2 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Toggle de sonido
+        soundToggle.addEventListener('click', () => {
+            soundEnabled = !soundEnabled;
+            soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
+            soundToggle.style.background = soundEnabled ? 'rgba(255,255,255,0.2)' : 'rgba(255,0,0,0.2)';
+        });
+
+        // Configurar canvas
+        function setupCanvas() {
+            const size = canvas.offsetWidth;
+            canvas.width = size;
+            canvas.height = size;
+            drawWheel();
+        }
+
+        // Dibujar ruleta mejorada
+        function drawWheel() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = canvas.width / 2;
+            const anglePerSlice = (2 * Math.PI) / segments.length;
+
+            segments.forEach((segment, index) => {
+                const startAngle = anglePerSlice * index - Math.PI / 2;
+                const endAngle = startAngle + anglePerSlice;
+
+                // Dibujar segmento con gradiente
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+                ctx.closePath();
+                
+                const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
+                gradient.addColorStop(0, lightenColor(segment.color, 20));
+                gradient.addColorStop(1, segment.color);
+                ctx.fillStyle = gradient;
+                ctx.fill();
+
+                // Borde brillante
+                ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+                ctx.lineWidth = 4;
+                ctx.stroke();
+
+                // Dibujar texto e icono
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate(startAngle + anglePerSlice / 2);
+                ctx.textAlign = 'center';
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 18px Poppins';
+                ctx.shadowColor = 'rgba(0,0,0,0.8)';
+                ctx.shadowBlur = 6;
+                ctx.shadowOffsetX = 2;
+                ctx.shadowOffsetY = 2;
+
+                // Icono
+                ctx.font = '32px Arial';
+                ctx.fillText(segment.icon, radius * 0.75, -15);
+
+                // Texto
+                ctx.font = 'bold 15px Poppins';
+                const lines = segment.text.split('\n');
+                const lineHeight = 20;
+                const textRadius = radius * 0.55;
+                const startY = -(lines.length - 1) * lineHeight / 2;
+
+                lines.forEach((line, i) => {
+                    ctx.fillText(line, textRadius, startY + (i * lineHeight));
+                });
+
+                ctx.restore();
+            });
+        }
+
+        // Aclarar color
+        function lightenColor(color, percent) {
+            const num = parseInt(color.replace("#",""), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) + amt;
+            const G = (num >> 8 & 0x00FF) + amt;
+            const B = (num & 0x0000FF) + amt;
+            return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 +
+                (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255))
+                .toString(16).slice(1);
+        }
+
+        // Sonidos mejorados
+        function playSpinSound() {
+            if (!soundEnabled) return;
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = 200 + (i * 50);
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.1);
+                }, i * 200);
+            }
+        }
+
+        function playWinSound() {
+            if (!soundEnabled) return;
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const notes = [523.25, 587.33, 659.25, 783.99, 880.00];
+            
+            notes.forEach((freq, index) => {
+                setTimeout(() => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = freq;
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.3);
+                }, index * 100);
+            });
+        }
+
+        function playFailSound() {
+            if (!soundEnabled) return;
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(200, audioContext.currentTime + 0.5);
+            oscillator.type = 'sawtooth';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        // Crear confeti mejorado
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#95e1d3', '#f38181', '#ffd700', '#ff69b4'];
+            
+            for (let i = 0; i < 150; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti-piece';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.width = Math.random() * 15 + 8 + 'px';
+                    confetti.style.height = confetti.style.width;
+                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 4000);
+                }, i * 20);
+            }
+        }
+
+        // Fuegos artificiales
+        function createFireworks() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#ffd700'];
+            
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const x = Math.random() * window.innerWidth;
+                    const y = Math.random() * (window.innerHeight / 2);
+                    
+                    for (let j = 0; j < 30; j++) {
+                        const firework = document.createElement('div');
+                        firework.className = 'firework';
+                        firework.style.left = x + 'px';
+                        firework.style.top = y + 'px';
+                        firework.style.background = colors[Math.floor(Math.random() * colors.length)];
+                        
+                        const angle = (Math.PI * 2 * j) / 30;
+                        const velocity = Math.random() * 100 + 50;
+                        
+                        document.body.appendChild(firework);
+                        
+                        let posX = x;
+                        let posY = y;
+                        let opacity = 1;
+                        
+                        const animate = () => {
+                            posX += Math.cos(angle) * velocity / 60;
+                            posY += Math.sin(angle) * velocity / 60 + 2;
+                            opacity -= 0.02;
+                            
+                            firework.style.left = posX + 'px';
+                            firework.style.top = posY + 'px';
+                            firework.style.opacity = opacity;
+                            
+                            if (opacity > 0) {
+                                requestAnimationFrame(animate);
+                            } else {
+                                firework.remove();
+                            }
+                        };
+                        
+                        animate();
+                    }
+                }, i * 500);
+            }
+        }
+
+        // Girar ruleta
+        function spinWheel() {
+            if (isSpinning) return;
+            
+            isSpinning = true;
+            spinButton.disabled = true;
+            wheelWrapper.classList.add('spinning');
+            playSpinSound();
+            
+            const spins = 6 + Math.random() * 4;
+            const randomAngle = Math.random() * 360;
+            const totalRotation = spins * 360 + randomAngle;
+            
+            currentRotation += totalRotation;
+            wheelWrapper.style.transform = `rotate(${currentRotation}deg)`;
+            
+            setTimeout(() => {
+                wheelWrapper.classList.remove('spinning');
+                const normalizedAngle = currentRotation % 360;
+                const anglePerSlice = 360 / segments.length;
+                const selectedIndex = Math.floor((360 - normalizedAngle + anglePerSlice / 2) / anglePerSlice) % segments.length;
+                
+                showResult(segments[selectedIndex]);
+                isSpinning = false;
+                spinButton.disabled = false;
+            }, 5000);
+        }
+
+        // Mostrar resultado
+        function showResult(segment) {
+            modalHeader.textContent = segment.icon + ' ' + segment.text.replace(/\n/g, ' ') + ' ' + segment.icon;
+            modal.classList.add('active');
+            
+            if (segment.type === 'pregunta') {
+                showQuestion(segment);
+            } else if (segment.type === 'castigo') {
+                showCastigo(segment);
+            } else if (segment.type === 'frase') {
+                showFrase(segment);
+            } else if (segment.type === 'premio') {
+                showPremio(segment);
+            }
+        }
+
+        // Mostrar pregunta
+        function showQuestion(segment) {
+            let timeLeft = 15;
+            modalBody.innerHTML = `
+                <div style="font-size: 1.4rem; font-weight: 600; margin-bottom: 15px;">${segment.question}</div>
+                <div class="timer" id="timer">⏱️ ${timeLeft}s</div>
+            `;
+            
+            const timer = setInterval(() => {
+                timeLeft--;
+                const timerEl = document.getElementById('timer');
+                if (timerEl) {
+                    timerEl.textContent = `⏱️ ${timeLeft}s`;
+                    if (timeLeft <= 5) {
+                        timerEl.style.color = '#ff0000';
+                        timerEl.style.transform = 'scale(1.2)';
+                    }
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    playFailSound();
+                    modalBody.innerHTML = '<div class="result-message fail">⏰ ¡Se acabó el tiempo! ⏰</div>';
+                    modalActions.innerHTML = '<button class="close-btn" onclick="closeModal()">Cerrar</button>';
+                }
+            }, 1000);
+            
+            modalActions.innerHTML = '<div class="answer-buttons"></div>';
+            const buttonsContainer = modalActions.querySelector('.answer-buttons');
+            
+            segment.answers.forEach((answer, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.textContent = answer;
+                btn.onclick = () => {
+                    clearInterval(timer);
+                    checkAnswer(index, segment.correct);
+                };
+                buttonsContainer.appendChild(btn);
+            });
+        }
+
+        // Verificar respuesta
+        function checkAnswer(selected, correct) {
+            if (selected === correct) {
+                playWinSound();
+                modalBody.innerHTML = '<div class="result-message success">🎉 ¡CORRECTO! 🎉<br>¡Excelente conocimiento en Seguridad Industrial!</div>';
+                createConfetti();
+            } else {
+                playFailSound();
+                modalBody.innerHTML = '<div class="result-message fail">❌ Incorrecto ❌<br>¡Sigue estudiando! La práctica hace al maestro.</div>';
+            }
+            
+            modalActions.innerHTML = '<button class="close-btn" onclick="closeModal()">Continuar</button>';
+        }
+
+        // Mostrar castigo
+        function showCastigo(segment) {
+            modalBody.innerHTML = `<div style="font-size: 1.5rem; font-weight: 600; color: #ff6b6b;">⚠️ ¡CASTIGO! ⚠️</div>
+                                    <div style="margin-top: 20px; font-size: 1.2rem;">${segment.action}</div>`;
+            modalActions.innerHTML = '<button class="close-btn" onclick="closeModal()">¡Ya lo hice!</button>';
+        }
+
+        // Mostrar frase
+        function showFrase(segment) {
+            modalBody.innerHTML = `<div style="font-size: 1.4rem; font-weight: 600;">${segment.message}</div>`;
+            modalActions.innerHTML = '<button class="close-btn" onclick="closeModal()">Intentar de nuevo</button>';
+        }
+
+        // Mostrar premio
+        function showPremio(segment) {
+            playWinSound();
+            createConfetti();
+            createFireworks();
+            modalBody.innerHTML = `<div class="result-message success" style="font-size: 1.8rem; padding: 35px;">
+                                    ${segment.message}<br><br>
+                                    🌟 ¡ERES UN EXPERTO! 🌟
+                                   </div>`;
+            modalActions.innerHTML = '<button class="close-btn" style="background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); color: #333;" onclick="closeModal()">¡Gracias!</button>';
+        }
+
+        // Cerrar modal
+        function closeModal() {
+            modal.classList.remove('active');
+            modalBody.innerHTML = '';
+            modalActions.innerHTML = '';
+        }
+
+        // Inicializar
+        window.addEventListener('load', () => {
+            setupCanvas();
+            createParticles();
+        });
+        window.addEventListener('resize', setupCanvas);
+        spinButton.addEventListener('click', spinWheel);
+    </script>
+</body>
+</html>

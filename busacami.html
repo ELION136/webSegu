@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seguri-Minas - Seguridad Industrial</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .setup {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .setup label {
+            font-weight: bold;
+            color: #333;
+            margin-right: 10px;
+        }
+
+        .setup select, .setup button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .setup select {
+            margin-right: 20px;
+        }
+
+        .setup button {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        .setup button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .scoreboard {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+
+        .player-info {
+            flex: 1;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .player-info.active {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            animation: pulse 1.5s infinite;
+        }
+
+        .player-info.player2 {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+            50% { box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
+        }
+
+        .player-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            opacity: 0.9;
+        }
+
+        .board {
+            display: grid;
+            gap: 5px;
+            margin: 20px auto;
+            max-width: 600px;
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            background: linear-gradient(145deg, #e6e6e6, #ffffff);
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cell:hover:not(.revealed) {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+            background: linear-gradient(145deg, #fff, #f0f0f0);
+        }
+
+        .cell.revealed {
+            cursor: default;
+            transform: rotateY(180deg);
+            animation: flip 0.6s;
+        }
+
+        @keyframes flip {
+            from { transform: rotateY(0deg); }
+            to { transform: rotateY(180deg); }
+        }
+
+        .cell.correct {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #2d5016;
+            border-color: #4caf50;
+        }
+
+        .cell.mine {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: #c62828;
+            border-color: #f44336;
+        }
+
+        .cell-content {
+            text-align: center;
+            padding: 5px;
+            transform: rotateY(180deg);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 500px;
+            animation: slideDown 0.5s;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal h2 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .winner-message {
+            font-size: 1.5em;
+            color: #333;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .modal button {
+            padding: 15px 40px;
+            font-size: 18px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .modal button:hover {
+            background: #5568d3;
+            transform: scale(1.05);
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            bottom: 110%;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 100;
+        }
+
+        .cell:hover .tooltip {
+            opacity: 1;
+        }
+
+        .mine-icon {
+            font-size: 2em;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .concept-icon {
+            font-size: 2em;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            .cell {
+                font-size: 0.7em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ SEGURI-MINAS ⚡</h1>
+        
+        <p class="subtitle">Juego de Seguridad Industrial: Iluminación y Ventilación</p>
+        <a href=""></a>
+        <div class="setup">
+            <label>Tamaño del tablero:</label>
+            <select id="boardSize">
+                <option value="4">4 x 4</option>
+                <option value="8">8 x 8</option>
+                <option value="10" selected>10 x 10</option>
+                <option value="12">12 x 12</option>
+            </select>
+            <button onclick="initGame()">Nuevo Juego</button>
+        </div>
+
+        <div class="scoreboard">
+            <div class="player-info player1 active" id="player1Info">
+                <div class="player-name">🔵 JUGADOR 1</div>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="p1Points">0</div>
+                        <div class="stat-label">Puntos</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="p1Correct">0</div>
+                        <div class="stat-label">Correctos</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="p1Risks">0</div>
+                        <div class="stat-label">Riesgos</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="player-info player2" id="player2Info">
+                <div class="player-name">🔴 JUGADOR 2</div>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="p2Points">0</div>
+                        <div class="stat-label">Puntos</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="p2Correct">0</div>
+                        <div class="stat-label">Correctos</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="p2Risks">0</div>
+                        <div class="stat-label">Riesgos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="board" id="board"></div>
+    </div>
+
+    <div class="modal" id="winnerModal">
+        <div class="modal-content">
+            <h2>🏆 ¡GANADOR! 🏆</h2>
+            <div class="winner-message" id="winnerMessage"></div>
+            <button onclick="closeModal()">Cerrar</button>
+            <button onclick="initGame(); closeModal();">Nuevo Juego</button>
+        </div>
+    </div>
+
+    <script>
+        const concepts = [
+            { text: "💡 Iluminancia = Lux", icon: "💡" },
+            { text: "🌬️ Ventilación Natural", icon: "🌬️" },
+            { text: "⚙️ Ventilación Mecánica", icon: "⚙️" },
+            { text: "💡 Lámparas LED", icon: "💡" },
+            { text: "😎 Deslumbramiento Directo", icon: "😎" },
+            { text: "🔆 Deslumbramiento Reflejado", icon: "🔆" },
+            { text: "📊 Niveles de Lux Recomendados", icon: "📊" },
+            { text: "🌡️ Confort Térmico", icon: "🌡️" },
+            { text: "🔌 Eficiencia Energética", icon: "🔌" },
+            { text: "👁️ Salud Visual", icon: "👁️" },
+            { text: "🏭 Renovación de Aire", icon: "🏭" },
+            { text: "💨 Extracción Localizada", icon: "💨" }
+        ];
+
+        const mines = [
+            { text: "⚠️ Deslumbramiento Incapacitante", msg: "Pérdida temporal de visión por exceso de luz", icon: "⚠️" },
+            { text: "☠️ Acumulación de Contaminantes", msg: "Gases tóxicos sin ventilación adecuada", icon: "☠️" },
+            { text: "🚫 Mala Ventilación", msg: "Falta de renovación del aire interior", icon: "🚫" },
+            { text: "⚡ Riesgo Eléctrico", msg: "Instalaciones eléctricas deficientes", icon: "⚡" },
+            { text: "🔥 Estrés Térmico", msg: "Temperatura corporal elevada por calor", icon: "🔥" },
+            { text: "😵 Fatiga Visual", msg: "Cansancio ocular por iluminación inadecuada", icon: "😵" },
+            { text: "💀 Exposición Prolongada", msg: "Daños acumulativos por malas condiciones", icon: "💀" },
+            { text: "⛔ Falta de Mantenimiento", msg: "Equipos sin revisión periódica", icon: "⛔" }
+        ];
+
+        let gameState = {
+            currentPlayer: 1,
+            players: [
+                { points: 0, correct: 0, risks: 0 },
+                { points: 0, correct: 0, risks: 0 }
+            ],
+            board: [],
+            cellsRevealed: 0,
+            totalCells: 0,
+            gameOver: false
+        };
+
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(freq, duration, type = 'sine') {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.frequency.value = freq;
+            osc.type = type;
+            gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            osc.start(audioContext.currentTime);
+            osc.stop(audioContext.currentTime + duration);
+        }
+
+        function playCorrectSound() {
+            playSound(523.25, 0.1);
+            setTimeout(() => playSound(659.25, 0.15), 100);
+        }
+
+        function playMineSound() {
+            playSound(200, 0.1, 'sawtooth');
+            setTimeout(() => playSound(150, 0.15, 'sawtooth'), 100);
+        }
+
+        function playWinSound() {
+            const notes = [523.25, 587.33, 659.25, 783.99];
+            notes.forEach((note, i) => {
+                setTimeout(() => playSound(note, 0.2), i * 150);
+            });
+        }
+
+        function initGame() {
+            const size = parseInt(document.getElementById('boardSize').value);
+            gameState = {
+                currentPlayer: 1,
+                players: [
+                    { points: 0, correct: 0, risks: 0 },
+                    { points: 0, correct: 0, risks: 0 }
+                ],
+                board: [],
+                cellsRevealed: 0,
+                totalCells: size * size,
+                gameOver: false
+            };
+
+            const mineCount = Math.floor(size * size * 0.2);
+            const cells = [];
+
+            for (let i = 0; i < mineCount; i++) {
+                cells.push({ ...mines[i % mines.length], isMine: true });
+            }
+
+            for (let i = 0; i < size * size - mineCount; i++) {
+                cells.push({ ...concepts[i % concepts.length], isMine: false });
+            }
+
+            cells.sort(() => Math.random() - 0.5);
+            gameState.board = cells;
+
+            renderBoard(size);
+            updateScoreboard();
+        }
+
+        function renderBoard(size) {
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+            board.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+
+            gameState.board.forEach((cell, idx) => {
+                const cellDiv = document.createElement('div');
+                cellDiv.className = 'cell';
+                cellDiv.innerHTML = '<span class="tooltip">Clic para revelar</span>';
+                cellDiv.onclick = () => revealCell(idx);
+                board.appendChild(cellDiv);
+            });
+        }
+
+        function revealCell(idx) {
+            if (gameState.gameOver) return;
+            
+            const cells = document.querySelectorAll('.cell');
+            const cell = cells[idx];
+            
+            if (cell.classList.contains('revealed')) return;
+
+            const cellData = gameState.board[idx];
+            cell.classList.add('revealed');
+            gameState.cellsRevealed++;
+
+            const currentPlayerIdx = gameState.currentPlayer - 1;
+
+            if (cellData.isMine) {
+                cell.classList.add('mine');
+                cell.innerHTML = `<div class="cell-content"><span class="mine-icon">${cellData.icon}</span><div>${cellData.text}</div><small>${cellData.msg}</small></div>`;
+                gameState.players[currentPlayerIdx].points = Math.max(0, gameState.players[currentPlayerIdx].points - 1);
+                gameState.players[currentPlayerIdx].risks++;
+                playMineSound();
+                switchPlayer();
+            } else {
+                cell.classList.add('correct');
+                cell.innerHTML = `<div class="cell-content"><span class="concept-icon">${cellData.icon}</span><div>${cellData.text}</div></div>`;
+                gameState.players[currentPlayerIdx].points++;
+                gameState.players[currentPlayerIdx].correct++;
+                playCorrectSound();
+            }
+
+            updateScoreboard();
+
+            if (gameState.cellsRevealed === gameState.totalCells) {
+                endGame();
+            }
+        }
+
+        function switchPlayer() {
+            gameState.currentPlayer = gameState.currentPlayer === 1 ? 2 : 1;
+            updateScoreboard();
+        }
+
+        function updateScoreboard() {
+            document.getElementById('p1Points').textContent = gameState.players[0].points;
+            document.getElementById('p1Correct').textContent = gameState.players[0].correct;
+            document.getElementById('p1Risks').textContent = gameState.players[0].risks;
+
+            document.getElementById('p2Points').textContent = gameState.players[1].points;
+            document.getElementById('p2Correct').textContent = gameState.players[1].correct;
+            document.getElementById('p2Risks').textContent = gameState.players[1].risks;
+
+            document.getElementById('player1Info').classList.toggle('active', gameState.currentPlayer === 1);
+            document.getElementById('player2Info').classList.toggle('active', gameState.currentPlayer === 2);
+        }
+
+        function endGame() {
+            gameState.gameOver = true;
+            playWinSound();
+
+            const p1Score = gameState.players[0].points;
+            const p2Score = gameState.players[1].points;
+
+            let message;
+            if (p1Score > p2Score) {
+                message = '🔵 <strong>JUGADOR 1</strong> domina la Seguridad Industrial 🔵';
+            } else if (p2Score > p1Score) {
+                message = '🔴 <strong>JUGADOR 2</strong> domina la Seguridad Industrial 🔴';
+            } else {
+                message = '🤝 <strong>¡EMPATE!</strong> Ambos dominan la Seguridad Industrial 🤝';
+            }
+
+            message += `<br><br>Puntuación Final:<br>Jugador 1: ${p1Score} pts | Jugador 2: ${p2Score} pts`;
+
+            document.getElementById('winnerMessage').innerHTML = message;
+            document.getElementById('winnerModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('winnerModal').classList.remove('show');
+        }
+
+        initGame();
+    </script>
+</body>
+</html>

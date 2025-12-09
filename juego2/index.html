@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruleta de Seguridad Industrial - Solo Preguntas</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-industry"></i> Ruleta de Seguridad Industrial</h1>
+            <p class="subtitle">Preguntas sobre Iluminación y Ventilación</p>
+        </header>
+
+        <main>
+            <div class="game-area">
+                <div class="wheel-container">
+                    <div class="wheel-border">
+                        <div class="wheel" id="wheel">
+                            <!-- Las secciones se generarán con JavaScript -->
+                        </div>
+                    </div>
+                    <div class="wheel-pointer"></div>
+                </div>
+
+                <div class="controls">
+                    <button id="spin-btn" class="spin-btn">
+                        <i class="fas fa-redo-alt"></i> Girar Ruleta
+                    </button>
+                    <div class="points-display">
+                        <span>Puntuación: </span>
+                        <span id="points">0</span>
+                    </div>
+                </div>
+
+                <div class="result-container">
+                    <h3>Resultado:</h3>
+                    <div class="result-display" id="result-display">
+                        <p>¡Gira la ruleta para comenzar el juego!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <div class="game-stats">
+                    <h3><i class="fas fa-chart-line"></i> Estadísticas</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Preguntas acertadas:</span>
+                            <span class="stat-value" id="correct-count">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Preguntas falladas:</span>
+                            <span class="stat-value" id="incorrect-count">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Preguntas totales:</span>
+                            <span class="stat-value" id="total-count">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="categories">
+                    <h3><i class="fas fa-lightbulb"></i> Temas de las preguntas</h3>
+                    <div class="category-tags">
+                        <span class="tag tag-illumination">Iluminación</span>
+                        <span class="tag tag-ventilation">Ventilación</span>
+                        <span class="tag tag-safety">Seguridad</span>
+                        <span class="tag tag-norms">Normativas</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Juego educativo sobre Seguridad Industrial - Iluminación y Ventilación</p>
+            <p>Versión solo preguntas | Desarrollado con HTML, CSS y JavaScript puro</p>
+        </footer>
+    </div>
+
+    <!-- Modal para preguntas -->
+    <div id="question-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3 id="modal-title">Pregunta sobre Seguridad Industrial</h3>
+            <div id="modal-body">
+                <p id="question-text"></p>
+                <div id="options-container"></div>
+                <div class="timer-container">
+                    <div class="timer-bar">
+                        <div id="timer-progress"></div>
+                    </div>
+                    <p>Tiempo restante: <span id="timer">15</span> segundos</p>
+                </div>
+                <p id="answer-feedback"></p>
+            </div>
+            <div class="modal-buttons">
+                <button id="submit-answer" class="modal-btn">Enviar respuesta</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de resultado final -->
+    <div id="result-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3 id="result-title">Resultado de la pregunta</h3>
+            <div id="result-body">
+                <div id="result-icon"></div>
+                <p id="result-text"></p>
+                <p id="correct-answer"></p>
+                <p id="points-earned"></p>
+            </div>
+            <div class="modal-buttons">
+                <button id="next-question" class="modal-btn">Siguiente pregunta</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
